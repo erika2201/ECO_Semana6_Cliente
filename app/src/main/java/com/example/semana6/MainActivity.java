@@ -2,8 +2,13 @@ package com.example.semana6;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Message;
+import android.view.MotionEvent;
 import android.widget.Button;
+
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,85 +20,217 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import model.Orden;
+
 public class MainActivity extends AppCompatActivity {
-
     private Button buttonUp, buttonDown, buttonRight, buttonLeft, buttonColor;
-
     private Socket socketcito;
-    private BufferedWriter writer;
+    private BufferedWriter escritorcito;
+    private BufferedReader lectorcito;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        buttonUp = findViewById(R.id.buttonUp);
         buttonDown = findViewById(R.id.buttonDown);
         buttonRight = findViewById(R.id.buttonRight);
         buttonLeft = findViewById(R.id.buttonLeft);
         buttonColor = findViewById(R.id.buttonColor);
-    }
+        buttonUp = findViewById(R.id.buttonUp);
+        initClient();
 
+        buttonUp.setOnTouchListener(
+                (view,event)->{
+                    Gson gson = new Gson();
+                    String key;
+                    Boolean isactive;
+                    Orden obj;
+                    String json;
+                    switch(event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            gson = new Gson();
+                            key = "UP";
+                            isactive= true;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            gson = new Gson();
+                            key = "UP";
+                            isactive= false;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                    }
+                    return true;
+                }
+        );
+        buttonDown.setOnTouchListener(
+                (view,event)->{
+                    Gson gson = new Gson();
+                    String key;
+                    Boolean isactive;
+                    Orden obj;
+                    String json;
+                    switch(event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            gson = new Gson();
+                            key = "DOWN";
+                            isactive= true;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            gson = new Gson();
+                            key = "DOWN";
+                            isactive= false;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                    }
+                    return true;
+                }
+        );
+        buttonLeft.setOnTouchListener(
+                (view,event)->{
+                    Gson gson = new Gson();
+                    String key;
+                    Boolean isactive;
+                    Orden obj;
+                    String json;
+                    switch(event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            gson = new Gson();
+                            key = "LEFT";
+                            isactive= true;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            gson = new Gson();
+                            key = "LEFT";
+                            isactive= false;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                    }
+                    return true;
+                }
+        );
+        buttonRight.setOnTouchListener(
+                (view,event)->{
+                    Gson gson = new Gson();
+                    String key;
+                    Boolean isactive;
+                    Orden obj;
+                    String json;
+                    switch(event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            gson = new Gson();
+                            key = "RIGHT";
+                            isactive= true;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            gson = new Gson();
+                            key = "RIGHT";
+                            isactive= false;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                    }
+                    return true;
+                }
+        );
+        buttonColor.setOnTouchListener(
+                (view,event)->{
+                    Gson gson = new Gson();
+                    String key;
+                    Boolean isactive;
+                    Orden obj;
+                    String json;
+                    switch(event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            gson = new Gson();
+                            key = "COLOR";
+                            isactive= true;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            gson = new Gson();
+                            key = "COLOR";
+                            isactive= false;
+                            obj = new Orden(key,isactive);
+                            json = gson.toJson(obj);
+                            sendMessage(json);
+                            break;
+                    }
+                    return true;
+                }
+        );
+    }
 
     public void initClient() {
-        new Thread(() -> {
-            try {
-                socketcito = new Socket("192.168.0.32", 6969);
-                System.out.println("Se ha conectado al servidor!!!");
+        new Thread(
+                ()->{
+                    try {
+                        //Paso 2: Enviar solicitud de conexion
+                        socketcito = new Socket("192.168.1.16",2021);
+                        //Paso 3: Cliente y server conectados
+                        System.out.println("Se ha conectado al servidor!!!");
 
-                OutputStream os = socketcito.getOutputStream();
-                OutputStreamWriter osw = new OutputStreamWriter(os);
-                writer = new BufferedWriter(osw);
+                        InputStream is = socketcito.getInputStream();
+                        InputStreamReader isr = new InputStreamReader(is);
+                        lectorcito = new BufferedReader(isr);
 
-            } catch (UnknownHostException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+                        OutputStream os = socketcito.getOutputStream();
+                        OutputStreamWriter osw = new OutputStreamWriter(os);
+                        escritorcito = new BufferedWriter(osw);
+
+                        while(true) {
+                            System.out.println("Esperando mensaje....");
+                            String line = lectorcito.readLine();
+                            System.out.println("Recibido: " + line);
+
+
+                        }
+
+                    } catch (UnknownHostException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+
         ).start();
     }
+    public void sendMessage(String msg) {
+        new Thread(
+                ()->{
+                    try {
+                        escritorcito.write(msg+"\n");
+                        escritorcito.flush();
 
-
-    public void bottons() {
-        buttonUp.setOnClickListener(
-                (v)->{
-                    new Thread(
-                            ()->{
-                                try {
-                                    writer.write("left\n");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                try {
-                                    writer.flush();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                    ).start();
-                });
-
-        buttonDown.setOnClickListener(
-                (v)->{
-                    //Mensaje para que cambie coodenadas de la bolita
-                });
-
-        buttonRight.setOnClickListener(
-                (v)->{
-                    //Mensaje para que cambie coodenadas de la bolita
-                });
-
-        buttonLeft.setOnClickListener(
-                (v)->{
-                    //Mensaje para que cambie coodenadas de la bolita
-                });
-
-        buttonColor.setOnClickListener(
-                (v)->{
-                    //Mensaje para que cambie color
-                });
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+        ).start();
     }
 }
